@@ -3,6 +3,7 @@
 import TimerDisplay from "./components/TimerDisplay";
 import ModeSwitcher from "./components/ModeSwitcher";
 import SessionCount from "./components/SessionCount";
+import SettingsModal from "./components/Setting";
 
 export default function Home() {
   return (
@@ -21,6 +22,8 @@ export default function Home() {
       <TimerDisplay />
       {/* session count */}
       <SessionCount />
+      {/* settings */}
+      <SettingsModal />
     </div>
   );
 }

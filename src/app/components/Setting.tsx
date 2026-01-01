@@ -1,0 +1,154 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useTimer } from "../../providers/TimerProvider";
+
+export default function SettingsModal() {
+  const [open, setOpen] = useState(false);
+  const {
+    pomoLength,
+    shortLength,
+    longLength,
+    setPomoLength,
+    setShortLength,
+    setLongLength,
+    sessionTarget,
+    setSessionTarget,
+  } = useTimer();
+
+  // Local state for draft values
+  const [localPomo, setLocalPomo] = useState(pomoLength);
+  const [localShort, setLocalShort] = useState(shortLength);
+  const [localLong, setLocalLong] = useState(longLength);
+  const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
+
+  // Sync local state when modal opens
+  useEffect(() => {
+    if (open) {
+      setLocalPomo(pomoLength);
+      setLocalShort(shortLength);
+      setLocalLong(longLength);
+      setLocalSessionTarget(sessionTarget);
+    }
+  }, [open, pomoLength, shortLength, longLength]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numValue = Number(value);
+    switch (name) {
+      case "pomo":
+        setLocalPomo(numValue);
+        break;
+      case "short":
+        setLocalShort(numValue);
+        break;
+      case "long":
+        setLocalLong(numValue);
+        break;
+      case "sessionTarget":
+        setLocalSessionTarget(numValue);
+        break;
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPomoLength(localPomo);
+    setShortLength(localShort);
+    setLongLength(localLong);
+    setSessionTarget(localSessionTarget);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      {/* Trigger */}
+      <div onClick={() => setOpen(true)} className="cursor-pointer">
+        <p>Setting</p>
+      </div>
+
+      {/* Modal */}
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-80 rounded-lg bg-white p-6">
+            <h2 className="mb-4 text-lg font-semibold text-black">Settings</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {/* 1. Pomodoro Timer */}
+              <div>
+                <label htmlFor="pomo" className="w-full text-black">
+                  Pomodoro
+                </label>
+                <input
+                  type="number"
+                  name="pomo"
+                  id="pomo"
+                  className="text-black placeholder:text-gray-400 w-full border border-black px-2"
+                  value={localPomo}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="short" className="w-full text-black">
+                  Short Break
+                </label>
+                <input
+                  type="number"
+                  name="short"
+                  id="short"
+                  className="text-black placeholder:text-gray-400 w-full border border-black px-2"
+                  value={localShort}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="long" className="w-full text-black">
+                  Long Break
+                </label>
+                <input
+                  type="number"
+                  name="long"
+                  id="long"
+                  className="text-black placeholder:text-gray-400 w-full border border-black px-2"
+                  value={localLong}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* 2. Session Target */}
+              <div>
+                <label htmlFor="sessionTarget" className="w-full text-black">
+                  Session Target
+                </label>
+                <input
+                  type="number"
+                  name="sessionTarget"
+                  id="sessionTarget"
+                  className="text-black placeholder:text-gray-400 w-full border border-black px-2"
+                  value={localSessionTarget}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* 3. Save Button */}
+              <div className="flex w-full justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="rounded bg-gray-200 px-4 py-2 text-black"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded bg-black px-4 py-2 text-white"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
