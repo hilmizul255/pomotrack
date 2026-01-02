@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTimer } from "../../providers/TimerProvider";
+import { useTimer } from "../providers/TimerProvider";
 
 export default function SettingsModal() {
   const [open, setOpen] = useState(false);
@@ -14,13 +14,15 @@ export default function SettingsModal() {
     setLongLength,
     sessionTarget,
     setSessionTarget,
+    localPomo,
+    localShort,
+    localLong,
+    localSessionTarget,
+    setLocalPomo,
+    setLocalShort,
+    setLocalLong,
+    setLocalSessionTarget,
   } = useTimer();
-
-  // Local state for draft values
-  const [localPomo, setLocalPomo] = useState(pomoLength);
-  const [localShort, setLocalShort] = useState(shortLength);
-  const [localLong, setLocalLong] = useState(longLength);
-  const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
 
   // Sync local state when modal opens
   useEffect(() => {

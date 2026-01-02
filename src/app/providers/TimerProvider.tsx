@@ -24,11 +24,21 @@ interface TimerContextType {
   setShortLength: (length: number) => void;
   setLongLength: (length: number) => void;
   setSessionTarget: (target: number) => void;
+  setSessionCount: (count: number) => void;
   /* Snackbar */
   snackbarMessage: string;
   snackbarShow: boolean;
   setSnackbarMessage: (message: string) => void;
   setSnackbarShow: (show: boolean) => void;
+  /* Local state for draft values */
+  localPomo: number;
+  localShort: number;
+  localLong: number;
+  localSessionTarget: number;
+  setLocalPomo: (length: number) => void;
+  setLocalShort: (length: number) => void;
+  setLocalLong: (length: number) => void;
+  setLocalSessionTarget: (target: number) => void;
 }
 
 const TimerContext = createContext<TimerContextType | null>(null);
@@ -45,6 +55,24 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   /* Snackbar */
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarShow, setSnackbarShow] = useState(false);
+  // Local state for draft values
+  const [localPomo, setLocalPomo] = useState(pomoLength);
+  const [localShort, setLocalShort] = useState(shortLength);
+  const [localLong, setLocalLong] = useState(longLength);
+  const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
+
+  const playAudio = (src: string, times: number) => {
+    const audio = new Audio(src);
+    let count = 0;
+    audio.addEventListener("ended", () => {
+      count++;
+      if (count < times) {
+        audio.currentTime = 0;
+        audio.play();
+      }
+    });
+    audio.play();
+  };
 
   /* Sync durations when mode changes instantly */
   useEffect(() => {
@@ -72,11 +100,19 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
         if (newCount >= sessionTarget) {
           setIsActive(false);
+          setSnackbarMessage(
+            "Congratulations! You have reached your session target!"
+          );
+          setSnackbarShow(true);
+          playAudio("/sounds/congrats.mp3", 3);
           return;
         } else {
           nextMode = "short";
           nextSeconds = shortLength * 60;
+          playAudio("/sounds/rest.mp3", 3);
         }
+      } else if (timerMode === "short") {
+        playAudio("/sounds/start.mp3", 3);
       }
 
       setTimerMode(nextMode);
@@ -120,6 +156,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         shortLength,
         longLength,
         sessionCount,
+        setSessionCount,
         setPomoLength,
         setShortLength,
         setLongLength,
@@ -129,6 +166,14 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         snackbarShow,
         setSnackbarMessage,
         setSnackbarShow,
+        localPomo,
+        localShort,
+        localLong,
+        localSessionTarget,
+        setLocalPomo,
+        setLocalShort,
+        setLocalLong,
+        setLocalSessionTarget,
       }}
     >
       {children}

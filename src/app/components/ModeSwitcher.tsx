@@ -1,17 +1,9 @@
 "use client";
 
-import { useTimer } from "../../providers/TimerProvider";
+import { useTimer } from "../providers/TimerProvider";
 
 export default function ModeSwitcher() {
-  const {
-    timerMode,
-    setTimerMode,
-    setIsActive,
-    setSecondsLeft,
-    pomoLength,
-    shortLength,
-    longLength,
-  } = useTimer();
+  const { timerMode, setTimerMode, setIsActive } = useTimer();
 
   const handleModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newMode = event.target.id;

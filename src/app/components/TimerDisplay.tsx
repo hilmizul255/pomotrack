@@ -1,6 +1,6 @@
 "use client";
 
-import { useTimer } from "../../providers/TimerProvider";
+import { useTimer } from "../providers/TimerProvider";
 
 export default function Timer() {
   const { secondsLeft, isActive, setIsActive } = useTimer();

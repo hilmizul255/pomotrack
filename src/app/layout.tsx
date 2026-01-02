@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { TimerProvider } from "../providers/TimerProvider";
+import { TimerProvider } from "./providers/TimerProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
