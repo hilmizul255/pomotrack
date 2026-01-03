@@ -61,6 +61,29 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [localLong, setLocalLong] = useState(longLength);
   const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
 
+  // Load settings from localStorage
+  useEffect(() => {
+    console.log("Loading settings from localStorage");
+    const savedPomo = localStorage.getItem("pomoLength");
+    const savedShort = localStorage.getItem("shortLength");
+    const savedLong = localStorage.getItem("longLength");
+    const savedTarget = localStorage.getItem("sessionTarget");
+
+    if (savedPomo) setPomoLength(Number(savedPomo));
+    if (savedShort) setShortLength(Number(savedShort));
+    if (savedLong) setLongLength(Number(savedLong));
+    if (savedTarget) setSessionTarget(Number(savedTarget));
+  }, []);
+
+  // Save settings to localStorage
+  useEffect(() => {
+    console.log("Saving settings to localStorage");
+    localStorage.setItem("pomoLength", pomoLength.toString());
+    localStorage.setItem("shortLength", shortLength.toString());
+    localStorage.setItem("longLength", longLength.toString());
+    localStorage.setItem("sessionTarget", sessionTarget.toString());
+  }, [pomoLength, shortLength, longLength, sessionTarget]);
+
   const playAudio = (src: string, times: number) => {
     const audio = new Audio(src);
     let count = 0;
