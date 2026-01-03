@@ -45,13 +45,13 @@ const TimerContext = createContext<TimerContextType | null>(null);
 
 export function TimerProvider({ children }: { children: ReactNode }) {
   const [timerMode, setTimerMode] = useState("pomo");
-  const [pomoLength, setPomoLength] = useState(0.025);
+  const [pomoLength, setPomoLength] = useState(25);
   const [shortLength, setShortLength] = useState(5);
   const [longLength, setLongLength] = useState(15);
   const [secondsLeft, setSecondsLeft] = useState(pomoLength * 60);
   const [isActive, setIsActive] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
-  const [sessionTarget, setSessionTarget] = useState(1);
+  const [sessionTarget, setSessionTarget] = useState(4);
   /* Snackbar */
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarShow, setSnackbarShow] = useState(false);

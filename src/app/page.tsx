@@ -1,10 +1,10 @@
 "use client";
 
-import TimerDisplay from "./components/TimerDisplay";
-import ModeSwitcher from "./components/ModeSwitcher";
-import SessionCount from "./components/SessionCount";
-import SettingsModal from "./components/Setting";
+import Header from "./components/Header";
 import Snackbar from "./components/Snackbar";
+import ModeSwitcher from "./components/ModeSwitcher";
+import TimerDisplay from "./components/TimerDisplay";
+import SessionCount from "./components/SessionCount";
 import { useTimer } from "./providers/TimerProvider";
 
 export default function Home() {
@@ -30,28 +30,26 @@ export default function Home() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-      }}
-    >
-      {/* mode switcher */}
-      <ModeSwitcher />
-      {/* timer */}
-      <TimerDisplay />
-      {/* session count */}
-      <SessionCount />
-      {/* settings */}
-      <SettingsModal />
+    <main className="min-h-screen flex flex-col items-center px-4">
+      <Header />
+
+      <div className="w-full max-w-[480px] mt-8 bg-white/10 rounded-lg p-6 flex flex-col items-center">
+        {/* mode switcher */}
+        <ModeSwitcher />
+
+        {/* timer */}
+        <TimerDisplay />
+      </div>
+
+      <div className="mt-8">
+        <SessionCount />
+      </div>
+
       <Snackbar
         message={snackbarMessage}
         show={snackbarShow}
         onClose={handleSnackbarClose}
       />
-    </div>
+    </main>
   );
 }

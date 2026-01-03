@@ -65,9 +65,27 @@ export default function SettingsModal() {
   return (
     <>
       {/* Trigger */}
-      <div onClick={() => setOpen(true)} className="cursor-pointer">
-        <p>Setting</p>
-      </div>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-1 px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-sm transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12.22 2a1 1 0 0 0-.97.75l-.18.72a2 2 0 0 1-1.47 1.47l-.72.18a1 1 0 0 0-.75.97V7a1 1 0 0 0 .75.97l.72.18a2 2 0 0 1 1.47 1.47l.18.72a1 1 0 0 0 .97.75h.56a1 1 0 0 0 .97-.75l.18-.72a2 2 0 0 1 1.47-1.47l.72-.18a1 1 0 0 0 .75-.97V5.56a1 1 0 0 0-.75-.97l-.72-.18a2 2 0 0 1-1.47-1.47l-.18-.72a1 1 0 0 0-.97-.75h-.56Z"></path>
+          <path d="M11 11.23a3 3 0 1 0 2.8 0"></path>
+          <path d="M12 8a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3v-6a3 3 0 0 0-3-3Z"></path>
+        </svg>
+        <span className="hidden sm:inline">Setting</span>
+      </button>
 
       {/* Modal */}
       {open && (
