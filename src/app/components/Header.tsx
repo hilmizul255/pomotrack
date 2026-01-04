@@ -2,10 +2,12 @@
 
 import { useTimer } from "../providers/TimerProvider";
 import SettingsModal from "./Setting";
+import Profile from "./Profile";
 
 export default function Header() {
   return (
     <header className="flex items-center justify-between w-full max-w-[620px] py-4 border-b border-black/10 mb-8">
+      {/* logo */}
       <div className="flex items-center gap-1 font-bold text-xl">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -24,6 +26,7 @@ export default function Header() {
         <span>Pomotrack</span>
       </div>
 
+      {/* user menu */}
       <div className="flex items-center gap-2">
         <button className="flex items-center gap-1 px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-sm transition-colors">
           <svg
@@ -46,11 +49,7 @@ export default function Header() {
 
         <SettingsModal />
 
-        <div className="w-8 h-8 rounded-md bg-white/20 overflow-hidden ml-1 border border-white/30 cursor-pointer">
-          <div className="w-full h-full bg-blue-500/20 flex items-center justify-center text-[10px]">
-            👤
-          </div>
-        </div>
+        <Profile />
       </div>
     </header>
   );
