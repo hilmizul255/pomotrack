@@ -39,6 +39,14 @@ interface TimerContextType {
   setLocalShort: (length: number) => void;
   setLocalLong: (length: number) => void;
   setLocalSessionTarget: (target: number) => void;
+  localSessionWorkStartTime: string;
+  localSessionWorkEndTime: string;
+  setLocalSessionWorkStartTime: (time: string) => void;
+  setLocalSessionWorkEndTime: (time: string) => void;
+  sessionWorkStartTime: string;
+  sessionWorkEndTime: string;
+  setSessionWorkStartTime: (time: string) => void;
+  setSessionWorkEndTime: (time: string) => void;
 }
 
 const TimerContext = createContext<TimerContextType | null>(null);
@@ -52,6 +60,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [isActive, setIsActive] = useState(false);
   const [sessionCount, setSessionCount] = useState(0);
   const [sessionTarget, setSessionTarget] = useState(4);
+  const [sessionWorkStartTime, setSessionWorkStartTime] = useState("00:00");
+  const [sessionWorkEndTime, setSessionWorkEndTime] = useState("00:00");
   /* Snackbar */
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarShow, setSnackbarShow] = useState(false);
@@ -60,6 +70,10 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [localShort, setLocalShort] = useState(shortLength);
   const [localLong, setLocalLong] = useState(longLength);
   const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
+  const [localSessionWorkStartTime, setLocalSessionWorkStartTime] =
+    useState(sessionWorkStartTime);
+  const [localSessionWorkEndTime, setLocalSessionWorkEndTime] =
+    useState(sessionWorkEndTime);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -68,11 +82,18 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     const savedShort = localStorage.getItem("shortLength");
     const savedLong = localStorage.getItem("longLength");
     const savedTarget = localStorage.getItem("sessionTarget");
+    const savedSessionWorkStartTime = localStorage.getItem(
+      "sessionWorkStartTime"
+    );
+    const savedSessionWorkEndTime = localStorage.getItem("sessionWorkEndTime");
 
     if (savedPomo) setPomoLength(Number(savedPomo));
     if (savedShort) setShortLength(Number(savedShort));
     if (savedLong) setLongLength(Number(savedLong));
     if (savedTarget) setSessionTarget(Number(savedTarget));
+    if (savedSessionWorkStartTime)
+      setSessionWorkStartTime(savedSessionWorkStartTime);
+    if (savedSessionWorkEndTime) setSessionWorkEndTime(savedSessionWorkEndTime);
   }, []);
 
   // Save settings to localStorage
@@ -82,7 +103,16 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("shortLength", shortLength.toString());
     localStorage.setItem("longLength", longLength.toString());
     localStorage.setItem("sessionTarget", sessionTarget.toString());
-  }, [pomoLength, shortLength, longLength, sessionTarget]);
+    localStorage.setItem("sessionWorkStartTime", sessionWorkStartTime);
+    localStorage.setItem("sessionWorkEndTime", sessionWorkEndTime);
+  }, [
+    pomoLength,
+    shortLength,
+    longLength,
+    sessionTarget,
+    sessionWorkStartTime,
+    sessionWorkEndTime,
+  ]);
 
   const playAudio = (src: string, times: number) => {
     const audio = new Audio(src);
@@ -197,6 +227,14 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         setLocalShort,
         setLocalLong,
         setLocalSessionTarget,
+        localSessionWorkStartTime,
+        localSessionWorkEndTime,
+        setLocalSessionWorkStartTime,
+        setLocalSessionWorkEndTime,
+        sessionWorkStartTime,
+        sessionWorkEndTime,
+        setSessionWorkStartTime,
+        setSessionWorkEndTime,
       }}
     >
       {children}
