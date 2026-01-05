@@ -1,17 +1,29 @@
-"use client";
+import { auth, signIn } from "@/auth";
+import { redirect } from "next/navigation";
 
-import { signIn } from "next-auth/react";
+export default async function Register() {
+  const session = await auth();
 
-export default function SignIn() {
+  if (session) {
+    redirect("/");
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <h1>Register</h1>
-      <button
-        onClick={() => signIn("google")}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+      <form
+        action={async () => {
+          "use server";
+          await signIn("google");
+        }}
       >
-        Signin with Google
-      </button>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Sign in with Google
+        </button>
+      </form>
       <p className="mt-4">
         Already have an account?{" "}
         <a href="/login" className="underline">

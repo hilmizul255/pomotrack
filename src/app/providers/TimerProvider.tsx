@@ -68,6 +68,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
   const [localSessionWorkStartTime, setLocalSessionWorkStartTime] =
     useState(sessionWorkStartTime);
+  const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null);
 
   const { data: session, status } = useSession();
 
@@ -175,8 +176,12 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
   /* Handle timer behavior */
   useEffect(() => {
-    //1. do nothing if timer is not active
-    if (isActive === false) return;
+    //1. Track session start time when timer starts
+    if (isActive && !sessionStartedAt) {
+      setSessionStartedAt(new Date().toISOString());
+    }
+
+    if (!isActive) return;
 
     //2. stop the timer and switch modes if time reaches zero
     if (secondsLeft <= 0) {
@@ -186,6 +191,34 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       if (timerMode === "pomo") {
         const newCount = sessionCount + 1;
         setSessionCount(newCount);
+
+        // Record session to DB
+        if (
+          status === "authenticated" &&
+          session?.user?.id &&
+          sessionStartedAt
+        ) {
+          const endedAt = new Date().toISOString();
+          const duration = Math.floor(
+            (new Date(endedAt).getTime() -
+              new Date(sessionStartedAt).getTime()) /
+              60000
+          );
+          fetch("/api/session/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: session.user.id,
+              started_at: sessionStartedAt,
+              ended_at: endedAt,
+              duration_minutes: duration,
+              mode: "focus",
+              status: "completed",
+            }),
+          }).catch((err) => console.error("Failed to record session", err));
+        }
+
+        setSessionStartedAt(null);
 
         if (newCount >= sessionTarget) {
           setIsActive(false);
@@ -201,7 +234,10 @@ export function TimerProvider({ children }: { children: ReactNode }) {
           playAudio("/sounds/rest.mp3", 3);
         }
       } else if (timerMode === "short") {
+        setSessionStartedAt(null);
         playAudio("/sounds/start.mp3", 3);
+      } else if (timerMode === "long") {
+        setSessionStartedAt(null);
       }
 
       setTimerMode(nextMode);
@@ -230,6 +266,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     longLength,
     sessionCount,
     sessionTarget,
+    sessionStartedAt,
+    status,
+    session,
   ]);
 
   return (

@@ -47,6 +47,16 @@ export async function POST(req: NextRequest) {
 
   //INSERT session
   try {
+    console.log("Creating session for user:", user_id);
+    console.log("Data to insert:", {
+      user_id,
+      started_at,
+      ended_at,
+      duration,
+      mode,
+      status,
+      logicalDateStr,
+    });
     const result = await pool.query(
       `INSERT INTO pomodoro_sessions 
        (user_id, started_at, ended_at, duration_minutes, mode, status, logical_date)
@@ -55,8 +65,11 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json({ session: result.rows[0] });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Database error in /api/session/create:", err);
+    return NextResponse.json(
+      { error: "Database error", details: err.message },
+      { status: 500 }
+    );
   }
 }
