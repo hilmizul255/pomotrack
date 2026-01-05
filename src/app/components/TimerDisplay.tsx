@@ -16,7 +16,7 @@ export default function Timer() {
       </div>
       <button
         onClick={() => setIsActive(!isActive)}
-        className={`bg-white text-[#ba4949] font-bold text-2xl px-12 py-4 rounded-md shadow-[0_6px_0_rgb(235,235,235)] transition-all active:translate-y-1 active:shadow-none mb-4 uppercase w-48`}
+        className={`bg-white text-accent font-bold text-2xl px-12 py-4 rounded-md shadow-[0_6px_0_rgb(235,235,235)] transition-all active:translate-y-1 active:shadow-none mb-4 uppercase w-48`}
       >
         {isActive ? "PAUSE" : "START"}
       </button>

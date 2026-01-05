@@ -20,7 +20,7 @@ export default function Header() {
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="bg-white text-[#ba4949] rounded-full p-0.5"
+          className="bg-white text-accent rounded-full p-0.5"
         >
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
@@ -30,7 +30,6 @@ export default function Header() {
       {/* user menu */}
       <div className="flex items-center gap-2">
         <ReportModal />
-
 
         <SettingsModal />
 

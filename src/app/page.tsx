@@ -36,15 +36,12 @@ export default function Home() {
       <div className="w-full max-w-[480px] mt-8 bg-white/10 rounded-lg p-6 flex flex-col items-center">
         {/* mode switcher */}
         <ModeSwitcher />
-
         {/* timer */}
         <TimerDisplay />
       </div>
-
       <div className="mt-8">
         <SessionCount />
       </div>
-
       <Snackbar
         message={snackbarMessage}
         show={snackbarShow}
