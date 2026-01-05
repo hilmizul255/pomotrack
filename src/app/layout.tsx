@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TimerProvider } from "./providers/TimerProvider";
+import NextAuthProvider from "./providers/NextAuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TimerProvider>{children}</TimerProvider>
+        <NextAuthProvider>
+          <TimerProvider>{children}</TimerProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

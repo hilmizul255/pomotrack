@@ -7,6 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { useSession } from "next-auth/react";
 
 interface TimerContextType {
   timerMode: string;
@@ -75,36 +76,84 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [localSessionWorkEndTime, setLocalSessionWorkEndTime] =
     useState(sessionWorkEndTime);
 
-  // Load settings from localStorage
-  useEffect(() => {
-    console.log("Loading settings from localStorage");
-    const savedPomo = localStorage.getItem("pomoLength");
-    const savedShort = localStorage.getItem("shortLength");
-    const savedLong = localStorage.getItem("longLength");
-    const savedTarget = localStorage.getItem("sessionTarget");
-    const savedSessionWorkStartTime = localStorage.getItem(
-      "sessionWorkStartTime"
-    );
-    const savedSessionWorkEndTime = localStorage.getItem("sessionWorkEndTime");
+  const { data: session, status } = useSession();
 
-    if (savedPomo) setPomoLength(Number(savedPomo));
-    if (savedShort) setShortLength(Number(savedShort));
-    if (savedLong) setLongLength(Number(savedLong));
-    if (savedTarget) setSessionTarget(Number(savedTarget));
-    if (savedSessionWorkStartTime)
-      setSessionWorkStartTime(savedSessionWorkStartTime);
-    if (savedSessionWorkEndTime) setSessionWorkEndTime(savedSessionWorkEndTime);
-  }, []);
-
-  // Save settings to localStorage
+  // Load settings
   useEffect(() => {
-    console.log("Saving settings to localStorage");
-    localStorage.setItem("pomoLength", pomoLength.toString());
-    localStorage.setItem("shortLength", shortLength.toString());
-    localStorage.setItem("longLength", longLength.toString());
-    localStorage.setItem("sessionTarget", sessionTarget.toString());
-    localStorage.setItem("sessionWorkStartTime", sessionWorkStartTime);
-    localStorage.setItem("sessionWorkEndTime", sessionWorkEndTime);
+    const loadSettings = async () => {
+      if (status === "authenticated") {
+        console.log("Loading settings from Database");
+        try {
+          const res = await fetch("/api/user/settings");
+          if (res.ok) {
+            const data = await res.json();
+            setPomoLength(data.pomo_length);
+            setShortLength(data.short_length);
+            setLongLength(data.long_length);
+            setSessionTarget(data.session_target);
+            setSessionWorkStartTime(data.work_day_start);
+            setSessionWorkEndTime(data.work_day_end);
+            setTimerMode(data.timer_mode);
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to load settings from DB", err);
+        }
+      }
+
+      // Fallback to localStorage
+      console.log("Loading settings from localStorage");
+      const savedPomo = localStorage.getItem("pomoLength");
+      const savedShort = localStorage.getItem("shortLength");
+      const savedLong = localStorage.getItem("longLength");
+      const savedTarget = localStorage.getItem("sessionTarget");
+      const savedSessionWorkStartTime = localStorage.getItem(
+        "sessionWorkStartTime"
+      );
+      const savedSessionWorkEndTime =
+        localStorage.getItem("sessionWorkEndTime");
+
+      if (savedPomo) setPomoLength(Number(savedPomo));
+      if (savedShort) setShortLength(Number(savedShort));
+      if (savedLong) setLongLength(Number(savedLong));
+      if (savedTarget) setSessionTarget(Number(savedTarget));
+      if (savedSessionWorkStartTime)
+        setSessionWorkStartTime(savedSessionWorkStartTime);
+      if (savedSessionWorkEndTime)
+        setSessionWorkEndTime(savedSessionWorkEndTime);
+    };
+
+    loadSettings();
+  }, [status]);
+
+  // Save settings
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (status === "authenticated") {
+      console.log("Saving settings to Database");
+      fetch("/api/user/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pomo_length: pomoLength,
+          short_length: shortLength,
+          long_length: longLength,
+          session_target: sessionTarget,
+          work_day_start: sessionWorkStartTime,
+          work_day_end: sessionWorkEndTime,
+          timer_mode: timerMode,
+        }),
+      }).catch((err) => console.error("Failed to save settings to DB", err));
+    } else {
+      console.log("Saving settings to localStorage");
+      localStorage.setItem("pomoLength", pomoLength.toString());
+      localStorage.setItem("shortLength", shortLength.toString());
+      localStorage.setItem("longLength", longLength.toString());
+      localStorage.setItem("sessionTarget", sessionTarget.toString());
+      localStorage.setItem("sessionWorkStartTime", sessionWorkStartTime);
+      localStorage.setItem("sessionWorkEndTime", sessionWorkEndTime);
+    }
   }, [
     pomoLength,
     shortLength,
@@ -112,6 +161,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     sessionTarget,
     sessionWorkStartTime,
     sessionWorkEndTime,
+    timerMode,
+    status,
   ]);
 
   const playAudio = (src: string, times: number) => {
