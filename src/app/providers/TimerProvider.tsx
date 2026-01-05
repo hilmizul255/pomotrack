@@ -41,13 +41,9 @@ interface TimerContextType {
   setLocalLong: (length: number) => void;
   setLocalSessionTarget: (target: number) => void;
   localSessionWorkStartTime: string;
-  localSessionWorkEndTime: string;
   setLocalSessionWorkStartTime: (time: string) => void;
-  setLocalSessionWorkEndTime: (time: string) => void;
   sessionWorkStartTime: string;
-  sessionWorkEndTime: string;
   setSessionWorkStartTime: (time: string) => void;
-  setSessionWorkEndTime: (time: string) => void;
 }
 
 const TimerContext = createContext<TimerContextType | null>(null);
@@ -62,7 +58,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [sessionCount, setSessionCount] = useState(0);
   const [sessionTarget, setSessionTarget] = useState(4);
   const [sessionWorkStartTime, setSessionWorkStartTime] = useState("00:00");
-  const [sessionWorkEndTime, setSessionWorkEndTime] = useState("00:00");
   /* Snackbar */
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarShow, setSnackbarShow] = useState(false);
@@ -73,8 +68,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [localSessionTarget, setLocalSessionTarget] = useState(sessionTarget);
   const [localSessionWorkStartTime, setLocalSessionWorkStartTime] =
     useState(sessionWorkStartTime);
-  const [localSessionWorkEndTime, setLocalSessionWorkEndTime] =
-    useState(sessionWorkEndTime);
 
   const { data: session, status } = useSession();
 
@@ -92,7 +85,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
             setLongLength(data.long_length);
             setSessionTarget(data.session_target);
             setSessionWorkStartTime(data.work_day_start);
-            setSessionWorkEndTime(data.work_day_end);
             setTimerMode(data.timer_mode);
             return;
           }
@@ -110,8 +102,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       const savedSessionWorkStartTime = localStorage.getItem(
         "sessionWorkStartTime"
       );
-      const savedSessionWorkEndTime =
-        localStorage.getItem("sessionWorkEndTime");
 
       if (savedPomo) setPomoLength(Number(savedPomo));
       if (savedShort) setShortLength(Number(savedShort));
@@ -119,8 +109,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       if (savedTarget) setSessionTarget(Number(savedTarget));
       if (savedSessionWorkStartTime)
         setSessionWorkStartTime(savedSessionWorkStartTime);
-      if (savedSessionWorkEndTime)
-        setSessionWorkEndTime(savedSessionWorkEndTime);
     };
 
     loadSettings();
@@ -141,7 +129,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
           long_length: longLength,
           session_target: sessionTarget,
           work_day_start: sessionWorkStartTime,
-          work_day_end: sessionWorkEndTime,
           timer_mode: timerMode,
         }),
       }).catch((err) => console.error("Failed to save settings to DB", err));
@@ -152,7 +139,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("longLength", longLength.toString());
       localStorage.setItem("sessionTarget", sessionTarget.toString());
       localStorage.setItem("sessionWorkStartTime", sessionWorkStartTime);
-      localStorage.setItem("sessionWorkEndTime", sessionWorkEndTime);
     }
   }, [
     pomoLength,
@@ -160,7 +146,6 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     longLength,
     sessionTarget,
     sessionWorkStartTime,
-    sessionWorkEndTime,
     timerMode,
     status,
   ]);
@@ -279,13 +264,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         setLocalLong,
         setLocalSessionTarget,
         localSessionWorkStartTime,
-        localSessionWorkEndTime,
         setLocalSessionWorkStartTime,
-        setLocalSessionWorkEndTime,
         sessionWorkStartTime,
-        sessionWorkEndTime,
         setSessionWorkStartTime,
-        setSessionWorkEndTime,
       }}
     >
       {children}

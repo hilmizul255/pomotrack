@@ -23,13 +23,9 @@ export default function SettingsModal() {
     setLocalLong,
     setLocalSessionTarget,
     sessionWorkStartTime,
-    sessionWorkEndTime,
     setSessionWorkStartTime,
-    setSessionWorkEndTime,
     localSessionWorkStartTime,
-    localSessionWorkEndTime,
     setLocalSessionWorkStartTime,
-    setLocalSessionWorkEndTime,
   } = useTimer();
 
   // Sync local state when modal opens
@@ -40,7 +36,6 @@ export default function SettingsModal() {
       setLocalLong(longLength);
       setLocalSessionTarget(sessionTarget);
       setLocalSessionWorkStartTime(sessionWorkStartTime);
-      setLocalSessionWorkEndTime(sessionWorkEndTime);
     }
   }, [
     open,
@@ -49,7 +44,11 @@ export default function SettingsModal() {
     longLength,
     sessionTarget,
     sessionWorkStartTime,
-    sessionWorkEndTime,
+    setLocalPomo,
+    setLocalShort,
+    setLocalLong,
+    setLocalSessionTarget,
+    setLocalSessionWorkStartTime,
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,9 +70,6 @@ export default function SettingsModal() {
       case "sessionWorkStartTime":
         setLocalSessionWorkStartTime(value);
         break;
-      case "sessionWorkEndTime":
-        setLocalSessionWorkEndTime(value);
-        break;
     }
   };
 
@@ -84,7 +80,6 @@ export default function SettingsModal() {
     setLongLength(localLong);
     setSessionTarget(localSessionTarget);
     setSessionWorkStartTime(localSessionWorkStartTime);
-    setSessionWorkEndTime(localSessionWorkEndTime);
     setOpen(false);
   };
 
@@ -175,7 +170,7 @@ export default function SettingsModal() {
                 />
               </div>
 
-              {/*Session Work Start & End Time*/}
+              {/*Session Work Start Time*/}
               <div>
                 <label
                   htmlFor="sessionWorkStartTime"
@@ -189,22 +184,6 @@ export default function SettingsModal() {
                   id="sessionWorkStartTime"
                   className="text-black placeholder:text-gray-400 w-full border border-black px-2"
                   value={localSessionWorkStartTime}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="sessionWorkEndTime"
-                  className="w-full text-black"
-                >
-                  Session Work End Time
-                </label>
-                <input
-                  type="time"
-                  name="sessionWorkEndTime"
-                  id="sessionWorkEndTime"
-                  className="text-black placeholder:text-gray-400 w-full border border-black px-2"
-                  value={localSessionWorkEndTime}
                   onChange={handleChange}
                 />
               </div>

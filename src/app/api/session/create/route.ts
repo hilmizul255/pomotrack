@@ -22,14 +22,30 @@ export async function POST(req: NextRequest) {
   // Compute logical date for night sessions if not provided
   let logicalDateStr = body.logical_date;
   if (!logicalDateStr) {
-    const startHour = new Date(started_at).getHours();
-    let logicalDate = new Date(started_at);
-    if (startHour < 10) {
-      logicalDate.setDate(logicalDate.getDate() - 1);
+    try {
+      const userSettings = await pool.query(
+        "SELECT work_day_start FROM users WHERE id = $1",
+        [user_id]
+      );
+      const workDayStart = userSettings.rows[0]?.work_day_start || "00:00";
+      const [startHour, startMin] = workDayStart.split(":").map(Number);
+      const startMinutes = startHour * 60 + startMin;
+
+      const startDate = new Date(started_at);
+      const currentMinutes = startDate.getHours() * 60 + startDate.getMinutes();
+
+      let logicalDate = new Date(started_at);
+      if (currentMinutes < startMinutes) {
+        logicalDate.setDate(logicalDate.getDate() - 1);
+      }
+      logicalDateStr = logicalDate.toISOString().split("T")[0];
+    } catch (err) {
+      console.error("Error fetching user settings for logical date:", err);
+      logicalDateStr = new Date(started_at).toISOString().split("T")[0];
     }
-    logicalDateStr = logicalDate.toISOString().split("T")[0];
   }
 
+  //INSERT session
   try {
     const result = await pool.query(
       `INSERT INTO pomodoro_sessions 

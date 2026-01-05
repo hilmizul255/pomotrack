@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import pool from "../../../lib/db";
+import { auth } from "../../../../auth";
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession();
-  if (!session?.user?.email) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
     const result = await pool.query(
-      "SELECT pomo_length, short_length, long_length, session_target, work_day_start, work_day_end, timer_mode FROM users WHERE email = $1",
-      [session.user.email]
+      "SELECT pomo_length, short_length, long_length, session_target, work_day_start, timer_mode FROM users WHERE id = $1",
+      [session.user.id]
     );
 
     if (result.rowCount === 0) {
@@ -29,8 +29,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession();
-  if (!session?.user?.email) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -42,10 +42,10 @@ export async function POST(req: NextRequest) {
       long_length,
       session_target,
       work_day_start,
-      work_day_end,
       timer_mode,
     } = body;
 
+    //UPDATE user settings
     await pool.query(
       `UPDATE users SET 
         pomo_length = $1, 
@@ -53,18 +53,16 @@ export async function POST(req: NextRequest) {
         long_length = $3, 
         session_target = $4, 
         work_day_start = $5, 
-        work_day_end = $6, 
-        timer_mode = $7
-       WHERE email = $8`,
+        timer_mode = $6
+       WHERE id = $7`,
       [
         pomo_length,
         short_length,
         long_length,
         session_target,
         work_day_start,
-        work_day_end,
         timer_mode,
-        session.user.email,
+        session.user.id,
       ]
     );
 
