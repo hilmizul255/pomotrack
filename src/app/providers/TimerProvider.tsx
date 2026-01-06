@@ -137,12 +137,19 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         }),
       }).catch((err) => console.error("Failed to save settings to DB", err));
     } else {
-      console.log("Saving settings to localStorage");
+      console.log("Saving settings to localStorage and cookies");
       localStorage.setItem("pomoLength", pomoLength.toString());
       localStorage.setItem("shortLength", shortLength.toString());
       localStorage.setItem("longLength", longLength.toString());
       localStorage.setItem("sessionTarget", sessionTarget.toString());
       localStorage.setItem("sessionWorkStartTime", sessionWorkStartTime);
+
+      // Also set cookies so the Auth flow (server-side) can pick up these "local" values
+      document.cookie = `pomo_length=${pomoLength}; path=/; max-age=3600; SameSite=Lax`;
+      document.cookie = `short_length=${shortLength}; path=/; max-age=3600; SameSite=Lax`;
+      document.cookie = `long_length=${longLength}; path=/; max-age=3600; SameSite=Lax`;
+      document.cookie = `session_target=${sessionTarget}; path=/; max-age=3600; SameSite=Lax`;
+      document.cookie = `work_day_start=${sessionWorkStartTime}; path=/; max-age=3600; SameSite=Lax`;
     }
   }, [
     pomoLength,
