@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   ReactNode,
 } from "react";
 import { useSession } from "next-auth/react";
@@ -69,6 +70,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [localSessionWorkStartTime, setLocalSessionWorkStartTime] =
     useState(sessionWorkStartTime);
   const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null);
+
+  const targetEndTimeRef = useRef<number | null>(null);
 
   const { data: session, status } = useSession();
 
@@ -176,17 +179,25 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
   /* Handle timer behavior */
   useEffect(() => {
-    //1. Track session start time when timer starts
-    if (isActive && !sessionStartedAt) {
-      setSessionStartedAt(new Date().toISOString());
+    // 1. Track session start time when timer starts
+    if (isActive) {
+      if (!sessionStartedAt) {
+        setSessionStartedAt(new Date().toISOString());
+      }
+      if (targetEndTimeRef.current === null) {
+        targetEndTimeRef.current = Date.now() + secondsLeft * 1000;
+      }
+    } else {
+      targetEndTimeRef.current = null;
+      return;
     }
 
-    if (!isActive) return;
-
-    //2. stop the timer and switch modes if time reaches zero
+    // 2. stop the timer and switch modes if time reaches zero
     if (secondsLeft <= 0) {
+      targetEndTimeRef.current = null;
       let nextMode = "pomo";
       let nextSeconds = pomoLength * 60;
+      // ... existing logic ...
 
       if (timerMode === "pomo") {
         const newCount = sessionCount + 1;
@@ -242,19 +253,23 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
       setTimerMode(nextMode);
       setSecondsLeft(nextSeconds);
+      targetEndTimeRef.current = Date.now() + nextSeconds * 1000;
       setIsActive(true); // then restart automatically
       return;
     }
 
-    //3. start interval to decrement seconds every second until it reaches 0
+    // 3. start interval to decrement seconds using timestamp
     const interval = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) {
-          return 0;
+      if (targetEndTimeRef.current) {
+        const now = Date.now();
+        const diff = targetEndTimeRef.current - now;
+        const remaining = Math.max(0, Math.ceil(diff / 1000));
+
+        if (remaining !== secondsLeft) {
+          setSecondsLeft(remaining);
         }
-        return s - 1;
-      });
-    }, 1000);
+      }
+    }, 100); // Check frequently to update as soon as the second changes
 
     return () => clearInterval(interval);
   }, [
