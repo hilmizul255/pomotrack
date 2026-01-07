@@ -11,6 +11,9 @@ export async function GET(req: NextRequest) {
 
   let groupBy: string;
   switch (period) {
+    case "day":
+      groupBy = "logical_date";
+      break;
     case "week":
       groupBy = "DATE_TRUNC('week', logical_date)";
       break;

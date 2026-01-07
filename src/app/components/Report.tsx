@@ -15,7 +15,7 @@ interface PeriodStat {
 
 export default function ReportModal() {
   const [open, setOpen] = useState(false);
-  const [period, setPeriod] = useState<"week" | "month">("week");
+  const [period, setPeriod] = useState<"day" | "week" | "month">("day");
   const [summary, setSummary] = useState<StatsSummary | null>(null);
   const [stats, setStats] = useState<PeriodStat[]>([]);
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,13 @@ export default function ReportModal() {
 
   const formatPeriod = (dateStr: string) => {
     const date = new Date(dateStr);
+    if (period === "day") {
+      return date.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
+    }
     if (period === "week") {
       return `Week of ${date.toLocaleDateString()}`;
     }
@@ -54,6 +61,15 @@ export default function ReportModal() {
       month: "long",
       year: "numeric",
     });
+  };
+
+  const formatMinutes = (totalMinutes: number) => {
+    const h = Math.floor(totalMinutes / 60);
+    const m = Math.round(totalMinutes % 60);
+    if (h > 0) {
+      return `${h}h ${m}m`;
+    }
+    return `${m}m`;
   };
 
   return (
@@ -98,6 +114,8 @@ export default function ReportModal() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -144,6 +162,16 @@ export default function ReportModal() {
                   <h3 className="font-bold text-gray-800">Focus History</h3>
                   <div className="bg-gray-200 p-1 rounded-md flex gap-1">
                     <button
+                      onClick={() => setPeriod("day")}
+                      className={`px-3 py-1 text-xs rounded transition-all ${
+                        period === "day"
+                          ? "bg-white text-black shadow-sm font-bold"
+                          : "text-gray-600 hover:text-black"
+                      }`}
+                    >
+                      Day
+                    </button>
+                    <button
                       onClick={() => setPeriod("week")}
                       className={`px-3 py-1 text-xs rounded transition-all ${
                         period === "week"
@@ -186,7 +214,7 @@ export default function ReportModal() {
                           </div>
                         </div>
                         <div className="text-lg font-bold text-[#ba4949]">
-                          {Math.round(item.total_focus_minutes)}m
+                          {formatMinutes(item.total_focus_minutes)}
                         </div>
                       </div>
                     ))}
